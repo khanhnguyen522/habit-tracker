@@ -4,6 +4,7 @@ import Login from "./pages/Login";
 import Home from "./pages/Home";
 import Analytics from "./pages/Analytics";
 import Habits from "./pages/Habits";
+import Reviews from "./pages/Reviews";
 
 function App() {
   const { token } = useAuth();
@@ -27,6 +28,10 @@ function App() {
         <Route
           path="/habits"
           element={token ? <Habits /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/reviews"
+          element={token ? <Reviews /> : <Navigate to="/login" />}
         />
       </Routes>
     </BrowserRouter>

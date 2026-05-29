@@ -9,6 +9,7 @@ function Navbar() {
     { path: "/home", icon: "🏠", label: "Home" },
     { path: "/analytics", icon: "📊", label: "Analytics" },
     { path: "/habits", icon: "⚙️", label: "Habits" },
+    { path: "/reviews", icon: "🤖", label: "Reviews" },
   ];
 
   return (

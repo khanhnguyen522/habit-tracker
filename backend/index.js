@@ -23,6 +23,9 @@ app.use("/logs", logsRoutes);
 const analyticsRoutes = require("./src/routes/analytics");
 app.use("/analytics", analyticsRoutes);
 
+const reviewsRoutes = require("./src/routes/reviews");
+app.use("/reviews", reviewsRoutes);
+
 // test route
 app.get("/", (req, res) => {
   res.json({ message: "Habit Tracker API is running" });
