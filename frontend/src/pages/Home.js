@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import api from "../services/api";
 import "./Home.css";
+import Navbar from "../components/Navbar";
 
 function Home() {
   const [habits, setHabits] = useState([]);
@@ -127,6 +128,7 @@ function Home() {
           </div>
         ))}
       </div>
+      <Navbar />
     </div>
   );
 }

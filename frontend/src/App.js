@@ -2,6 +2,8 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "./context/AuthContext";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
+import Analytics from "./pages/Analytics";
+import Habits from "./pages/Habits";
 
 function App() {
   const { token } = useAuth();
@@ -17,6 +19,14 @@ function App() {
         <Route
           path="/"
           element={token ? <Navigate to="/home" /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/analytics"
+          element={token ? <Analytics /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/habits"
+          element={token ? <Habits /> : <Navigate to="/login" />}
         />
       </Routes>
     </BrowserRouter>
