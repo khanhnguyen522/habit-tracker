@@ -58,6 +58,24 @@
   height: 12px;
 }
 
+.heatmap-months {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.heatmap-month {
+  font-size: 11px;
+  color: #888;
+  font-weight: 500;
+}
+
+.heatmap-tip {
+  font-size: 11px;
+  color: #888;
+  margin-top: 8px;
+}
+
 .streaks-list {
   display: flex;
   flex-direction: column;

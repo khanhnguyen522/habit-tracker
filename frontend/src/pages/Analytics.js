@@ -62,7 +62,14 @@ function Analytics() {
       const d = new Date();
       d.setDate(d.getDate() - i);
       const key = d.toISOString().split("T")[0];
-      days.push({ date: key, count: grid[key] || 0 });
+      days.push({
+        date: key,
+        count: grid[key] || 0,
+        label: d.toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+        }),
+      });
     }
     return days;
   };
@@ -78,16 +85,27 @@ function Analytics() {
       {/* heatmap */}
       <div className="analytics-card">
         <h3 className="card-title">Activity — last 90 days</h3>
+
+        {/* month labels */}
+        <div className="heatmap-months">
+          {["Mar", "Apr", "May", "Jun"].map((m) => (
+            <span key={m} className="heatmap-month">
+              {m}
+            </span>
+          ))}
+        </div>
+
         <div className="heatmap-grid">
           {heatmapDays.map((day, i) => (
             <div
               key={i}
               className="heatmap-cell"
               style={{ backgroundColor: getHeatmapColor(day.count) }}
-              title={`${day.date}: ${day.count} habits`}
+              title={`${day.label}: ${day.count} habits completed`}
             />
           ))}
         </div>
+
         <div className="heatmap-legend">
           <span>Less</span>
           {["#ebedf0", "#c6e48b", "#7bc96f", "#239a3b", "#196127"].map((c) => (
@@ -99,6 +117,10 @@ function Analytics() {
           ))}
           <span>More</span>
         </div>
+
+        <p className="heatmap-tip">
+          💡 Hover over any square to see the exact date and count
+        </p>
       </div>
 
       {/* streaks */}
