@@ -5,7 +5,9 @@ import "./Habits.css";
 
 function Habits() {
   const [habits, setHabits] = useState([]);
+  const [archived, setArchived] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showArchived, setShowArchived] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [editingHabit, setEditingHabit] = useState(null);
   const [form, setForm] = useState({
@@ -23,7 +25,8 @@ function Habits() {
   const fetchHabits = async () => {
     try {
       const res = await api.get("/habits");
-      setHabits(res.data);
+      setHabits(res.data.filter((h) => !h.is_archived));
+      setArchived(res.data.filter((h) => h.is_archived));
     } catch (err) {
       console.error(err);
     } finally {
@@ -61,6 +64,28 @@ function Habits() {
   const handleArchive = async (id) => {
     try {
       await api.put(`/habits/${id}`, { is_archived: true });
+      fetchHabits();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleRestore = async (id) => {
+    try {
+      await api.put(`/habits/${id}`, { is_archived: false });
+      fetchHabits();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (
+      !window.confirm("Delete this habit permanently? All logs will be lost.")
+    )
+      return;
+    try {
+      await api.delete(`/habits/${id}`);
       fetchHabits();
     } catch (err) {
       console.error(err);
@@ -111,14 +136,12 @@ function Habits() {
           <h3 className="form-title">
             {editingHabit ? "Edit Habit" : "New Habit"}
           </h3>
-
           <input
             className="form-input"
             placeholder="Habit name"
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
           />
-
           <p className="form-label">Icon</p>
           <div className="icon-grid">
             {icons.map((icon) => (
@@ -131,7 +154,6 @@ function Habits() {
               </div>
             ))}
           </div>
-
           <p className="form-label">Frequency</p>
           <div className="freq-row">
             {["daily", "weekly"].map((f) => (
@@ -144,7 +166,6 @@ function Habits() {
               </div>
             ))}
           </div>
-
           <div className="goal-row">
             <div>
               <p className="form-label">Goal habit</p>
@@ -157,7 +178,6 @@ function Habits() {
               }
             />
           </div>
-
           {form.is_goal_habit && (
             <div>
               <p className="form-label">Weight: {form.goal_weight}%</p>
@@ -174,7 +194,6 @@ function Habits() {
               />
             </div>
           )}
-
           <div className="form-buttons">
             <button className="cancel-btn" onClick={resetForm}>
               Cancel
@@ -186,12 +205,12 @@ function Habits() {
         </div>
       )}
 
-      {/* habits list */}
+      {/* active habits */}
       <div className="habits-list">
         {habits.map((habit) => (
           <div key={habit.id} className="habit-row">
             <div className="habit-info">
-              <span className="habit-icon">{habit.icon}</span>
+              <div className="habit-icon">{habit.icon}</div>
               <div>
                 <p className="habit-name">{habit.name}</p>
                 <p className="habit-meta">
@@ -210,10 +229,63 @@ function Habits() {
               >
                 Archive
               </button>
+              <button
+                className="delete-btn"
+                onClick={() => handleDelete(habit.id)}
+              >
+                Delete
+              </button>
             </div>
           </div>
         ))}
       </div>
+
+      {/* archived section */}
+      {archived.length > 0 && (
+        <div className="archived-section">
+          <button
+            className="archived-toggle"
+            onClick={() => setShowArchived(!showArchived)}
+          >
+            <span>Archived ({archived.length})</span>
+            <span>{showArchived ? "▲" : "▼"}</span>
+          </button>
+          {showArchived && (
+            <div className="habits-list" style={{ marginTop: "10px" }}>
+              {archived.map((habit) => (
+                <div key={habit.id} className="habit-row archived-row">
+                  <div className="habit-info">
+                    <div className="habit-icon">{habit.icon}</div>
+                    <div>
+                      <p
+                        className="habit-name"
+                        style={{ color: "var(--text-muted)" }}
+                      >
+                        {habit.name}
+                      </p>
+                      <p className="habit-meta">{habit.frequency}</p>
+                    </div>
+                  </div>
+                  <div className="habit-actions">
+                    <button
+                      className="restore-btn"
+                      onClick={() => handleRestore(habit.id)}
+                    >
+                      Restore
+                    </button>
+                    <button
+                      className="delete-btn"
+                      onClick={() => handleDelete(habit.id)}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       <Navbar />
     </div>

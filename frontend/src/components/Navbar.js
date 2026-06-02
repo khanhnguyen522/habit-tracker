@@ -6,10 +6,10 @@ function Navbar() {
   const location = useLocation();
 
   const tabs = [
-    { path: "/home", icon: "🏠", label: "Home" },
-    { path: "/analytics", icon: "📊", label: "Analytics" },
-    { path: "/habits", icon: "⚙️", label: "Habits" },
-    { path: "/reviews", icon: "🤖", label: "Reviews" },
+    { path: "/home", icon: "ti-home", label: "Home" },
+    { path: "/analytics", icon: "ti-chart-bar", label: "Analytics" },
+    { path: "/habits", icon: "ti-list-check", label: "Habits" },
+    { path: "/reviews", icon: "ti-sparkles", label: "Reviews" },
   ];
 
   return (
@@ -20,7 +20,7 @@ function Navbar() {
           className={`nav-item ${location.pathname === tab.path ? "active" : ""}`}
           onClick={() => navigate(tab.path)}
         >
-          <span className="nav-icon">{tab.icon}</span>
+          <i className={`ti ${tab.icon} nav-icon`} aria-hidden="true"></i>
           <span className="nav-label">{tab.label}</span>
         </div>
       ))}

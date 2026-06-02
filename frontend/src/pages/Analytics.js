@@ -43,11 +43,11 @@ function Analytics() {
   };
 
   const getHeatmapColor = (count) => {
-    if (!count || count === 0) return "#ebedf0";
-    if (count === 1) return "#c6e48b";
-    if (count === 2) return "#7bc96f";
-    if (count === 3) return "#239a3b";
-    return "#196127";
+    if (!count || count === 0) return "#EDE8E0";
+    if (count === 1) return "#F0DCC8";
+    if (count === 2) return "#D4A574";
+    if (count === 3) return "#C17B4E";
+    return "#854F0B";
   };
 
   const buildHeatmapGrid = () => {
@@ -85,8 +85,6 @@ function Analytics() {
       {/* heatmap */}
       <div className="analytics-card">
         <h3 className="card-title">Activity — last 90 days</h3>
-
-        {/* month labels */}
         <div className="heatmap-months">
           {["Mar", "Apr", "May", "Jun"].map((m) => (
             <span key={m} className="heatmap-month">
@@ -94,7 +92,6 @@ function Analytics() {
             </span>
           ))}
         </div>
-
         <div className="heatmap-grid">
           {heatmapDays.map((day, i) => (
             <div
@@ -105,10 +102,9 @@ function Analytics() {
             />
           ))}
         </div>
-
         <div className="heatmap-legend">
           <span>Less</span>
-          {["#ebedf0", "#c6e48b", "#7bc96f", "#239a3b", "#196127"].map((c) => (
+          {["#EDE8E0", "#F0DCC8", "#D4A574", "#C17B4E", "#854F0B"].map((c) => (
             <div
               key={c}
               className="heatmap-cell"
@@ -117,9 +113,8 @@ function Analytics() {
           ))}
           <span>More</span>
         </div>
-
         <p className="heatmap-tip">
-          💡 Hover over any square to see the exact date and count
+          Hover over any square to see the date and count
         </p>
       </div>
 
@@ -163,16 +158,34 @@ function Analytics() {
                   })
                 }
                 fontSize={11}
+                tick={{ fill: "#9C8E7A" }}
+                axisLine={{ stroke: "#EDE8E0" }}
+                tickLine={false}
               />
-              <YAxis domain={[0, 100]} fontSize={11} />
+              <YAxis
+                domain={[0, 100]}
+                fontSize={11}
+                tick={{ fill: "#9C8E7A" }}
+                axisLine={false}
+                tickLine={false}
+              />
               <Tooltip
                 formatter={(v) => [`${v}%`, "Completion"]}
                 labelFormatter={(v) => new Date(v).toLocaleDateString()}
+                contentStyle={{
+                  background: "#2C2A26",
+                  border: "none",
+                  borderRadius: "10px",
+                  color: "#FAF7F2",
+                  fontSize: "12px",
+                }}
+                itemStyle={{ color: "#FAF7F2" }}
+                labelStyle={{ color: "#9C8A78" }}
               />
               <Bar
                 dataKey="completion_percentage"
-                fill="#4F46E5"
-                radius={[4, 4, 0, 0]}
+                fill="#C17B4E"
+                radius={[6, 6, 0, 0]}
               />
             </BarChart>
           </ResponsiveContainer>
@@ -185,14 +198,14 @@ function Analytics() {
           <h3 className="card-title">Best & worst day</h3>
           <div className="best-worst-row">
             <div className="best-card">
-              <p className="bw-label">Best day 🏆</p>
+              <p className="bw-label">Best day</p>
               <p className="bw-day">{bestWorst.best?.day_name?.trim()}</p>
               <p className="bw-avg">
                 {bestWorst.best?.avg_completions} avg habits
               </p>
             </div>
             <div className="worst-card">
-              <p className="bw-label">Needs work ⚠️</p>
+              <p className="bw-label">Needs work</p>
               <p className="bw-day">{bestWorst.worst?.day_name?.trim()}</p>
               <p className="bw-avg">
                 {bestWorst.worst?.avg_completions} avg habits
@@ -201,6 +214,7 @@ function Analytics() {
           </div>
         </div>
       )}
+
       <Navbar />
     </div>
   );

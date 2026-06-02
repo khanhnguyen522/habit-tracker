@@ -34,7 +34,7 @@ function Login() {
   return (
     <div className="login-container">
       <div className="login-card">
-        <h1 className="login-emoji">✅</h1>
+        <h1 className="login-emoji">🌿</h1>
         <h2 className="login-title">Habit Tracker</h2>
         <p className="login-subtitle">Built for the grind</p>
 

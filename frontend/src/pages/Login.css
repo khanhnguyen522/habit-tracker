@@ -3,45 +3,46 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #f5f5f5;
+  background-color: var(--bg);
   padding: 20px;
 }
 
 .login-card {
-  background-color: white;
-  border-radius: 16px;
-  padding: 40px;
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 40px 32px;
   width: 100%;
   max-width: 400px;
-  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border);
   text-align: center;
 }
 
 .login-emoji {
-  font-size: 48px;
-  margin: 0 0 8px;
+  font-size: 44px;
+  margin: 0 0 10px;
 }
 
 .login-title {
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 700;
   margin: 0 0 4px;
-  color: #1a1a1a;
+  color: var(--text-primary);
 }
 
 .login-subtitle {
-  font-size: 14px;
-  color: #888;
-  margin: 0 0 24px;
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 0 0 28px;
 }
 
 .login-error {
-  background-color: #fff0f0;
-  color: #e53e3e;
-  padding: 10px;
-  border-radius: 8px;
+  background: #fff0ee;
+  color: #993c1d;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
   margin-bottom: 16px;
-  font-size: 14px;
+  font-size: 13px;
+  border: 1px solid #f5c4b3;
 }
 
 .login-form {
@@ -52,45 +53,49 @@
 
 .login-input {
   padding: 12px 16px;
-  border-radius: 8px;
-  border: 1px solid #e2e2e2;
-  font-size: 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  font-size: 15px;
   outline: none;
+  background: var(--bg);
+  color: var(--text-primary);
+  transition: border-color 0.15s ease;
 }
 
 .login-input:focus {
-  border-color: #4f46e5;
+  border-color: var(--terracotta);
 }
 
 .login-button {
-  padding: 12px;
-  border-radius: 8px;
+  padding: 13px;
+  border-radius: var(--radius-sm);
   border: none;
-  background-color: #4f46e5;
-  color: white;
-  font-size: 16px;
+  background: var(--terracotta);
+  color: #faf7f2;
+  font-size: 15px;
   font-weight: 600;
   cursor: pointer;
   margin-top: 4px;
-}
-
-.login-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+  transition: opacity 0.15s ease;
 }
 
 .login-button:hover:not(:disabled) {
-  background-color: #4338ca;
+  opacity: 0.85;
+}
+
+.login-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .login-toggle {
   margin-top: 20px;
-  font-size: 14px;
-  color: #666;
+  font-size: 13px;
+  color: var(--text-secondary);
 }
 
 .login-link {
-  color: #4f46e5;
+  color: var(--terracotta);
   cursor: pointer;
   font-weight: 600;
 }

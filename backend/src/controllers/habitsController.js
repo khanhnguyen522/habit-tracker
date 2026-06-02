@@ -29,7 +29,7 @@ const getHabits = async (req, res) => {
   try {
     const result = await pool.query(
       `SELECT * FROM habits 
-       WHERE user_id = $1 AND is_archived = false
+       WHERE user_id = $1
        ORDER BY created_at ASC`,
       [req.userId],
     );

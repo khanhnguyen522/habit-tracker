@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import api from "../services/api";
-import "./Home.css";
 import Navbar from "../components/Navbar";
+import "./Home.css";
 
 function Home() {
   const [habits, setHabits] = useState([]);
   const [readiness, setReadiness] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [lastChecked, setLastChecked] = useState(null);
   const { user, logout } = useAuth();
 
   useEffect(() => {
@@ -16,11 +17,23 @@ function Home() {
 
   const fetchTodayData = async () => {
     try {
-      const [habitsRes, readinessRes] = await Promise.all([
+      const [habitsRes, readinessRes, streaksRes] = await Promise.all([
         api.get("/logs/today"),
         api.get("/analytics/readiness-score"),
+        api.get("/analytics/streaks"),
       ]);
-      setHabits(habitsRes.data);
+
+      const streakMap = {};
+      streaksRes.data.forEach((s) => {
+        streakMap[s.habit_id] = s.current_streak;
+      });
+
+      const habitsWithStreaks = habitsRes.data.map((h) => ({
+        ...h,
+        current_streak: streakMap[h.id] || 0,
+      }));
+
+      setHabits(habitsWithStreaks);
       setReadiness(readinessRes.data);
     } catch (err) {
       console.error(err);
@@ -35,8 +48,11 @@ function Home() {
         await api.delete(
           `/logs/${habit.id}/${new Date().toISOString().split("T")[0]}`,
         );
+        setLastChecked(null);
       } else {
         await api.post("/logs", { habit_id: habit.id, skipped: false });
+        setLastChecked(habit.name);
+        setTimeout(() => setLastChecked(null), 3000);
       }
       fetchTodayData();
     } catch (err) {
@@ -44,8 +60,35 @@ function Home() {
     }
   };
 
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return "Good morning";
+    if (hour < 17) return "Good afternoon";
+    return "Good evening";
+  };
+
+  const getInitials = (email) => {
+    if (!email) return "KN";
+    const name = email.split("@")[0];
+    return name.slice(0, 2).toUpperCase();
+  };
+
+  const getDateChip = () => {
+    return new Date().toLocaleDateString("en-US", {
+      weekday: "long",
+      month: "long",
+      day: "numeric",
+    });
+  };
+
   const completedCount = habits.filter((h) => h.completed).length;
   const totalCount = habits.length;
+  const allDone = completedCount === totalCount && totalCount > 0;
+
+  const bestStreak = habits.reduce((max, h) => {
+    const s = parseInt(h.current_streak || 0);
+    return s > max ? s : max;
+  }, 0);
 
   if (loading) return <div className="loading">Loading...</div>;
 
@@ -54,55 +97,80 @@ function Home() {
       {/* header */}
       <div className="home-header">
         <div>
-          <h2 className="home-greeting">Hey {user?.email?.split("@")[0]} 👋</h2>
-          <p className="home-date">
-            {new Date().toLocaleDateString("en-US", {
-              weekday: "long",
-              month: "long",
-              day: "numeric",
-            })}
-          </p>
+          <div className="home-greeting-sub">{getGreeting()}</div>
+          <div className="home-greeting-name">
+            {user?.email?.split("@")[0] || "Khanh"}
+          </div>
         </div>
-        <button className="logout-btn" onClick={logout}>
-          Logout
-        </button>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <div className="home-avatar">{getInitials(user?.email)}</div>
+          <button className="logout-btn" onClick={logout}>
+            Sign out
+          </button>
+        </div>
       </div>
+
+      {/* streak pills */}
+      <div className="streak-row">
+        <div className="streak-pill">🔥 {bestStreak} day streak</div>
+        {allDone && (
+          <div className="streak-pill streak-pill-green">
+            ⚡ All done today!
+          </div>
+        )}
+        {completedCount > 0 && !allDone && (
+          <div className="streak-pill streak-pill-green">⚡ Keep going!</div>
+        )}
+      </div>
+
+      {/* xp toast */}
+      {lastChecked && (
+        <div className="xp-toast">
+          <div className="xp-dot">+10</div>
+          <div>
+            <div className="xp-text">{lastChecked} completed!</div>
+            <div className="xp-sub">Keep the streak going today</div>
+          </div>
+        </div>
+      )}
 
       {/* readiness score */}
       {readiness && (
         <div className="score-card">
           <div className="score-top">
             <div>
-              <p className="score-label">Internship Readiness</p>
-              <p className="score-number">
+              <div className="score-label">Readiness score</div>
+              <div className="score-number">
                 {readiness.score}
                 <span className="score-max">/100</span>
-              </p>
+              </div>
             </div>
-            <div className="days-remaining">
-              <p className="days-number">{readiness.days_remaining}</p>
-              <p className="days-label">days left</p>
+            <div className="days-box">
+              <div className="days-num">{readiness.days_remaining}</div>
+              <div className="days-label">days left</div>
             </div>
           </div>
           <div className="score-bar-bg">
             <div
               className="score-bar-fill"
-              style={{ width: `${readiness.score}%` }}
+              style={{ width: `${Math.max(readiness.score, 1)}%` }}
             />
           </div>
-          <p className="score-target">Target: July 31, 2026</p>
+          <div className="score-target">Target: July 31, 2026</div>
         </div>
       )}
 
-      {/* today's progress */}
+      {/* date */}
+      <div className="date-chip">{getDateChip()}</div>
+
+      {/* habits */}
       <div className="progress-row">
-        <p className="progress-text">Today's habits</p>
-        <p className="progress-count">
-          {completedCount}/{totalCount}
-        </p>
+        <div className="progress-text">Today's habits</div>
+        <div className="progress-count">
+          {completedCount} / {totalCount}
+        </div>
       </div>
 
-      {/* habit list */}
       <div className="habit-list">
         {habits.map((habit) => (
           <div
@@ -110,24 +178,40 @@ function Home() {
             className={`habit-item ${habit.completed ? "habit-done" : ""}`}
             onClick={() => toggleHabit(habit)}
           >
-            <div className="habit-left">
-              <div
-                className={`habit-checkbox ${habit.completed ? "checked" : ""}`}
-              >
-                {habit.completed && <span>✓</span>}
+            <div
+              className={`habit-checkbox ${habit.completed ? "checked" : ""}`}
+            >
+              {habit.completed && <span className="check-mark">✓</span>}
+            </div>
+            <div
+              className={`habit-icon-wrap ${habit.completed ? "done-bg" : ""}`}
+            >
+              {habit.icon}
+            </div>
+            <div className="habit-info">
+              <div className={`habit-name ${habit.completed ? "done" : ""}`}>
+                {habit.name}
               </div>
-              <div>
-                <p className="habit-name">
-                  {habit.icon} {habit.name}
-                </p>
-                {habit.is_goal_habit && (
-                  <p className="habit-tag">Goal habit · {habit.goal_weight}%</p>
-                )}
-              </div>
+              {habit.is_goal_habit && (
+                <div className="habit-goal-badge">
+                  Goal · {habit.goal_weight}%
+                </div>
+              )}
+            </div>
+            <div className="habit-streak-info">
+              {habit.current_streak > 0 ? (
+                <>
+                  🔥 {habit.current_streak}
+                  <span>streak</span>
+                </>
+              ) : (
+                <span style={{ color: "var(--text-muted)" }}>—</span>
+              )}
             </div>
           </div>
         ))}
       </div>
+
       <Navbar />
     </div>
   );

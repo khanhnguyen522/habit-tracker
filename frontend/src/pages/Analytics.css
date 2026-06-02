@@ -1,33 +1,38 @@
 .analytics-container {
   max-width: 480px;
   margin: 0 auto;
-  padding: 24px 16px 100px;
+  padding: 24px 20px 100px;
+  background: var(--bg);
+  min-height: 100vh;
 }
 
 .analytics-title {
   font-size: 22px;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--text-primary);
   margin-bottom: 20px;
 }
 
 .analytics-card {
-  background: white;
-  border-radius: 16px;
-  padding: 20px;
-  margin-bottom: 16px;
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  padding: 18px 20px;
+  margin-bottom: 14px;
+  border: 1px solid var(--border);
 }
 
 .card-title {
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 600;
-  color: #1a1a1a;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-secondary);
   margin-bottom: 16px;
 }
 
 .empty-text {
   font-size: 14px;
-  color: #888;
+  color: var(--text-muted);
   text-align: center;
   padding: 20px 0;
 }
@@ -42,7 +47,7 @@
 .heatmap-cell {
   width: 100%;
   aspect-ratio: 1;
-  border-radius: 2px;
+  border-radius: 3px;
 }
 
 .heatmap-legend {
@@ -50,7 +55,8 @@
   align-items: center;
   gap: 4px;
   font-size: 11px;
-  color: #888;
+  color: var(--text-muted);
+  margin-top: 8px;
 }
 
 .heatmap-legend .heatmap-cell {
@@ -61,45 +67,46 @@
 .heatmap-months {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 }
 
 .heatmap-month {
   font-size: 11px;
-  color: #888;
+  color: var(--text-muted);
   font-weight: 500;
 }
 
 .heatmap-tip {
   font-size: 11px;
-  color: #888;
+  color: var(--text-muted);
   margin-top: 8px;
 }
 
 .streaks-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .streak-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px;
-  background: #f9f9f9;
-  border-radius: 10px;
+  padding: 12px 14px;
+  background: var(--bg-warm);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
 }
 
 .streak-name {
   font-size: 14px;
-  font-weight: 500;
-  color: #1a1a1a;
+  font-weight: 600;
+  color: var(--text-primary);
 }
 
 .streak-sub {
   font-size: 12px;
-  color: #888;
+  color: var(--text-secondary);
   margin-top: 2px;
 }
 
@@ -110,13 +117,13 @@
 }
 
 .streak-fire {
-  font-size: 20px;
+  font-size: 18px;
 }
 
 .streak-number {
   font-size: 22px;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--terracotta);
 }
 
 .best-worst-row {
@@ -126,31 +133,36 @@
 }
 
 .best-card {
-  background: #f0fdf4;
-  border-radius: 12px;
-  padding: 16px;
+  background: var(--bg-accent);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  border: 1px solid #f0dcc8;
 }
 
 .worst-card {
-  background: #fff7ed;
-  border-radius: 12px;
-  padding: 16px;
+  background: var(--bg-warm);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  border: 1px solid var(--border);
 }
 
 .bw-label {
-  font-size: 12px;
-  color: #888;
-  margin-bottom: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin-bottom: 6px;
 }
 
 .bw-day {
   font-size: 18px;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--text-primary);
 }
 
 .bw-avg {
   font-size: 12px;
-  color: #888;
+  color: var(--text-secondary);
   margin-top: 2px;
 }
