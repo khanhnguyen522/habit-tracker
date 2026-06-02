@@ -3,6 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import api from "../services/api";
 import Navbar from "../components/Navbar";
 import "./Home.css";
+import confetti from "canvas-confetti";
 
 function Home() {
   const [habits, setHabits] = useState([]);
@@ -53,6 +54,13 @@ function Home() {
         await api.post("/logs", { habit_id: habit.id, skipped: false });
         setLastChecked(habit.name);
         setTimeout(() => setLastChecked(null), 3000);
+
+        const remaining = habits.filter(
+          (h) => !h.completed && h.id !== habit.id,
+        );
+        if (remaining.length === 0) {
+          setTimeout(() => fireConfetti(), 300);
+        }
       }
       fetchTodayData();
     } catch (err) {
@@ -71,6 +79,15 @@ function Home() {
     if (!email) return "KN";
     const name = email.split("@")[0];
     return name.slice(0, 2).toUpperCase();
+  };
+
+  const fireConfetti = () => {
+    confetti({
+      particleCount: 150,
+      spread: 80,
+      origin: { y: 0.6 },
+      colors: ["#C17B4E", "#D4A574", "#F0DCC8", "#2C2A26", "#FAF7F2"],
+    });
   };
 
   const getDateChip = () => {
