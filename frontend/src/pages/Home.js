@@ -82,12 +82,34 @@ function Home() {
   };
 
   const fireConfetti = () => {
-    confetti({
-      particleCount: 150,
-      spread: 80,
-      origin: { y: 0.6 },
-      colors: ["#C17B4E", "#D4A574", "#F0DCC8", "#2C2A26", "#FAF7F2"],
-    });
+    const end = Date.now() + 1500;
+
+    const frame = () => {
+      confetti({
+        particleCount: 6,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0, y: 0.7 },
+        colors: ["#C17B4E", "#D4A574", "#F0DCC8", "#2C2A26", "#854F0B"],
+        disableForReducedMotion: false,
+        useWorker: false,
+      });
+      confetti({
+        particleCount: 6,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1, y: 0.7 },
+        colors: ["#C17B4E", "#D4A574", "#F0DCC8", "#2C2A26", "#854F0B"],
+        disableForReducedMotion: false,
+        useWorker: false,
+      });
+
+      if (Date.now() < end) {
+        requestAnimationFrame(frame);
+      }
+    };
+
+    frame();
   };
 
   const getDateChip = () => {
