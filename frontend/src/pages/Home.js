@@ -82,34 +82,36 @@ function Home() {
   };
 
   const fireConfetti = () => {
-    const end = Date.now() + 1500;
+    const canvas = document.createElement("canvas");
+    canvas.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+  `;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    document.body.appendChild(canvas);
 
-    const frame = () => {
-      confetti({
-        particleCount: 6,
-        angle: 60,
-        spread: 55,
-        origin: { x: 0, y: 0.7 },
-        colors: ["#C17B4E", "#D4A574", "#F0DCC8", "#2C2A26", "#854F0B"],
-        disableForReducedMotion: false,
-        useWorker: false,
-      });
-      confetti({
-        particleCount: 6,
-        angle: 120,
-        spread: 55,
-        origin: { x: 1, y: 0.7 },
-        colors: ["#C17B4E", "#D4A574", "#F0DCC8", "#2C2A26", "#854F0B"],
-        disableForReducedMotion: false,
-        useWorker: false,
-      });
+    const myConfetti = confetti.create(canvas, {
+      resize: true,
+      useGlobalCanvas: false,
+    });
 
-      if (Date.now() < end) {
-        requestAnimationFrame(frame);
-      }
-    };
+    myConfetti({
+      particleCount: 150,
+      spread: 80,
+      origin: { y: 0.6 },
+      colors: ["#C17B4E", "#D4A574", "#F0DCC8", "#2C2A26", "#FAF7F2"],
+      disableForReducedMotion: false,
+    });
 
-    frame();
+    setTimeout(() => {
+      document.body.removeChild(canvas);
+    }, 4000);
   };
 
   const getDateChip = () => {
