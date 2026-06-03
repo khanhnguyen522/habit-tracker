@@ -14,14 +14,15 @@
 }
 
 .habits-title {
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 700;
   color: var(--text-primary);
+  letter-spacing: -0.5px;
 }
 
 .add-btn {
-  background: var(--terracotta);
-  color: #faf7f2;
+  background: var(--accent);
+  color: #fff;
   border: none;
   border-radius: var(--radius-full);
   padding: 8px 18px;
@@ -32,11 +33,11 @@
 }
 
 .add-btn:hover {
-  opacity: 0.85;
+  opacity: 0.8;
 }
 
 .form-card {
-  background: var(--bg-card);
+  background: var(--bg-surface);
   border-radius: var(--radius-md);
   padding: 20px;
   margin-bottom: 16px;
@@ -45,14 +46,14 @@
 
 .form-title {
   font-size: 15px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-primary);
   margin-bottom: 16px;
 }
 
 .form-input {
   width: 100%;
-  padding: 11px 14px;
+  padding: 10px 14px;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   font-size: 14px;
@@ -64,7 +65,7 @@
 }
 
 .form-input:focus {
-  border-color: var(--terracotta);
+  border-color: var(--accent);
 }
 
 .form-label {
@@ -90,23 +91,23 @@
 }
 
 .icon-option {
-  font-size: 22px;
+  font-size: 20px;
   text-align: center;
   padding: 7px;
   border-radius: var(--radius-sm);
   cursor: pointer;
-  border: 1.5px solid transparent;
-  background: var(--bg-warm);
+  border: 1px solid var(--border);
+  background: var(--bg);
   transition: all 0.15s ease;
 }
 
 .icon-option:hover {
-  background: var(--bg-accent);
+  background: var(--bg-surface);
 }
 
 .icon-option.selected {
-  border-color: var(--terracotta);
-  background: var(--terracotta-light);
+  border-color: var(--accent);
+  background: var(--bg-hover);
 }
 
 .freq-row {
@@ -118,7 +119,7 @@
 .freq-option {
   padding: 7px 16px;
   border-radius: var(--radius-full);
-  border: 1.5px solid var(--border);
+  border: 1px solid var(--border);
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
@@ -129,9 +130,9 @@
 }
 
 .freq-option.selected {
-  border-color: var(--terracotta);
-  color: var(--terracotta-dark);
-  background: var(--terracotta-light);
+  border-color: var(--accent);
+  color: var(--text-primary);
+  background: var(--bg-hover);
 }
 
 .goal-row {
@@ -142,10 +143,10 @@
 }
 
 .toggle {
-  width: 44px;
-  height: 24px;
+  width: 40px;
+  height: 22px;
   border-radius: 99px;
-  background: var(--border-warm);
+  background: var(--border);
   cursor: pointer;
   position: relative;
   transition: background 0.2s;
@@ -153,14 +154,14 @@
 }
 
 .toggle.on {
-  background: var(--terracotta);
+  background: var(--accent);
 }
 
 .toggle::after {
   content: "";
   position: absolute;
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
   background: white;
   top: 3px;
@@ -169,13 +170,13 @@
 }
 
 .toggle.on::after {
-  transform: translateX(20px);
+  transform: translateX(18px);
 }
 
 .slider {
   width: 100%;
   margin-bottom: 16px;
-  accent-color: var(--terracotta);
+  accent-color: var(--accent);
 }
 
 .form-buttons {
@@ -185,23 +186,23 @@
 
 .cancel-btn {
   flex: 1;
-  padding: 11px;
+  padding: 10px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--border);
   background: var(--bg);
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
   color: var(--text-secondary);
 }
 
 .save-btn {
   flex: 1;
-  padding: 11px;
+  padding: 10px;
   border-radius: var(--radius-sm);
   border: none;
-  background: var(--terracotta);
-  color: #faf7f2;
+  background: var(--accent);
+  color: #fff;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -209,13 +210,13 @@
 }
 
 .save-btn:hover {
-  opacity: 0.85;
+  opacity: 0.8;
 }
 
 .habits-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 .habit-row {
@@ -235,10 +236,10 @@
 }
 
 .habit-icon {
-  font-size: 22px;
-  width: 36px;
-  height: 36px;
-  background: var(--bg-accent);
+  font-size: 20px;
+  width: 32px;
+  height: 32px;
+  background: var(--bg-surface);
   border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
@@ -247,7 +248,7 @@
 
 .habit-name {
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--text-primary);
 }
 
@@ -277,9 +278,9 @@
 .archive-btn {
   padding: 5px 12px;
   border-radius: var(--radius-full);
-  border: none;
-  background: #fff0ee;
-  color: #993c1d;
+  border: 1px solid var(--border);
+  background: var(--bg-surface);
+  color: var(--text-secondary);
   font-size: 12px;
   font-weight: 500;
   cursor: pointer;
@@ -310,25 +311,25 @@
   border-radius: var(--radius-sm);
   padding: 10px 14px;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--text-secondary);
   cursor: pointer;
 }
 
 .archived-toggle:hover {
-  background: var(--bg-warm);
+  background: var(--bg-surface);
 }
 
 .archived-row {
-  opacity: 0.7;
+  opacity: 0.6;
 }
 
 .restore-btn {
   padding: 5px 12px;
   border-radius: var(--radius-full);
-  border: 1px solid var(--green-border);
-  background: var(--green-light);
-  color: var(--green);
+  border: 1px solid var(--border);
+  background: var(--bg-surface);
+  color: var(--text-secondary);
   font-size: 12px;
   font-weight: 500;
   cursor: pointer;

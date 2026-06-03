@@ -30,24 +30,20 @@
 
 .nav-icon {
   font-size: 20px;
-  line-height: 1;
+  color: var(--text-muted);
 }
 
 .nav-label {
   font-size: 10px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--text-muted);
   letter-spacing: 0.03em;
 }
 
 .nav-item.active .nav-label {
-  color: var(--terracotta);
+  color: var(--accent);
 }
 
 .nav-item.active .nav-icon {
-  color: var(--terracotta);
-}
-
-.nav-item:not(.active) .nav-icon {
-  color: var(--text-muted);
+  color: var(--accent);
 }

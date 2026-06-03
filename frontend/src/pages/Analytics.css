@@ -7,9 +7,10 @@
 }
 
 .analytics-title {
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 700;
   color: var(--text-primary);
+  letter-spacing: -0.5px;
   margin-bottom: 20px;
 }
 
@@ -17,15 +18,15 @@
   background: var(--bg-card);
   border-radius: var(--radius-md);
   padding: 18px 20px;
-  margin-bottom: 14px;
+  margin-bottom: 12px;
   border: 1px solid var(--border);
 }
 
 .card-title {
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.08em;
   color: var(--text-secondary);
   margin-bottom: 16px;
 }
@@ -47,7 +48,7 @@
 .heatmap-cell {
   width: 100%;
   aspect-ratio: 1;
-  border-radius: 3px;
+  border-radius: 2px;
 }
 
 .heatmap-legend {
@@ -85,7 +86,7 @@
 .streaks-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 .streak-row {
@@ -93,20 +94,20 @@
   justify-content: space-between;
   align-items: center;
   padding: 12px 14px;
-  background: var(--bg-warm);
+  background: var(--bg-surface);
   border-radius: var(--radius-sm);
   border: 1px solid var(--border);
 }
 
 .streak-name {
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--text-primary);
 }
 
 .streak-sub {
-  font-size: 12px;
-  color: var(--text-secondary);
+  font-size: 11px;
+  color: var(--text-muted);
   margin-top: 2px;
 }
 
@@ -117,52 +118,63 @@
 }
 
 .streak-fire {
-  font-size: 18px;
+  font-size: 16px;
 }
 
 .streak-number {
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 700;
-  color: var(--terracotta);
+  color: var(--text-primary);
 }
 
 .best-worst-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  gap: 10px;
 }
 
 .best-card {
-  background: var(--bg-accent);
+  background: var(--accent);
   border-radius: var(--radius-sm);
   padding: 14px;
-  border: 1px solid #f0dcc8;
 }
 
 .worst-card {
-  background: var(--bg-warm);
+  background: var(--bg-surface);
   border-radius: var(--radius-sm);
   padding: 14px;
   border: 1px solid var(--border);
 }
 
 .bw-label {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--text-muted);
+  color: rgba(255, 255, 255, 0.5);
   margin-bottom: 6px;
+}
+
+.worst-card .bw-label {
+  color: var(--text-muted);
 }
 
 .bw-day {
   font-size: 18px;
   font-weight: 700;
+  color: #fff;
+}
+
+.worst-card .bw-day {
   color: var(--text-primary);
 }
 
 .bw-avg {
   font-size: 12px;
-  color: var(--text-secondary);
+  color: rgba(255, 255, 255, 0.5);
   margin-top: 2px;
+}
+
+.worst-card .bw-avg {
+  color: var(--text-muted);
 }

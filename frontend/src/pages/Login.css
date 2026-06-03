@@ -18,7 +18,7 @@
 }
 
 .login-emoji {
-  font-size: 44px;
+  font-size: 40px;
   margin: 0 0 10px;
 }
 
@@ -27,6 +27,7 @@
   font-weight: 700;
   margin: 0 0 4px;
   color: var(--text-primary);
+  letter-spacing: -0.5px;
 }
 
 .login-subtitle {
@@ -63,15 +64,15 @@
 }
 
 .login-input:focus {
-  border-color: var(--terracotta);
+  border-color: var(--accent);
 }
 
 .login-button {
   padding: 13px;
   border-radius: var(--radius-sm);
   border: none;
-  background: var(--terracotta);
-  color: #faf7f2;
+  background: var(--accent);
+  color: #fff;
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
@@ -80,11 +81,11 @@
 }
 
 .login-button:hover:not(:disabled) {
-  opacity: 0.85;
+  opacity: 0.8;
 }
 
 .login-button:disabled {
-  opacity: 0.5;
+  opacity: 0.4;
   cursor: not-allowed;
 }
 
@@ -95,7 +96,7 @@
 }
 
 .login-link {
-  color: var(--terracotta);
+  color: var(--accent);
   cursor: pointer;
   font-weight: 600;
 }

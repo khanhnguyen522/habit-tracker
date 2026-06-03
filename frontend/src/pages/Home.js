@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
 import api from "../services/api";
 import Navbar from "../components/Navbar";
@@ -11,6 +11,7 @@ function Home() {
   const [loading, setLoading] = useState(true);
   const [lastChecked, setLastChecked] = useState(null);
   const { user, logout } = useAuth();
+  const toastTimerRef = useRef(null);
 
   useEffect(() => {
     fetchTodayData();
@@ -52,8 +53,16 @@ function Home() {
         setLastChecked(null);
       } else {
         await api.post("/logs", { habit_id: habit.id, skipped: false });
+
+        // clear existing timer and reset
+        if (toastTimerRef.current) {
+          clearTimeout(toastTimerRef.current);
+        }
         setLastChecked(habit.name);
-        setTimeout(() => setLastChecked(null), 3000);
+        toastTimerRef.current = setTimeout(() => {
+          setLastChecked(null);
+          toastTimerRef.current = null;
+        }, 3000);
 
         const remaining = habits.filter(
           (h) => !h.completed && h.id !== habit.id,
@@ -81,6 +90,14 @@ function Home() {
     return name.slice(0, 2).toUpperCase();
   };
 
+  const getDateChip = () => {
+    return new Date().toLocaleDateString("en-US", {
+      weekday: "long",
+      month: "long",
+      day: "numeric",
+    });
+  };
+
   const fireConfetti = () => {
     const canvas = document.createElement("canvas");
     canvas.style.cssText = `
@@ -101,25 +118,53 @@ function Home() {
       useGlobalCanvas: false,
     });
 
-    myConfetti({
-      particleCount: 150,
-      spread: 80,
-      origin: { y: 0.6 },
-      colors: ["#C17B4E", "#D4A574", "#F0DCC8", "#2C2A26", "#FAF7F2"],
-      disableForReducedMotion: false,
-    });
+    const colors = [
+      "#FF6B6B",
+      "#FFD93D",
+      "#6BCB77",
+      "#4D96FF",
+      "#FF6BCC",
+      "#FF9F43",
+    ];
 
-    setTimeout(() => {
-      document.body.removeChild(canvas);
-    }, 4000);
-  };
+    const duration = 3000;
+    const end = Date.now() + duration;
 
-  const getDateChip = () => {
-    return new Date().toLocaleDateString("en-US", {
-      weekday: "long",
-      month: "long",
-      day: "numeric",
-    });
+    const frame = () => {
+      myConfetti({
+        particleCount: 5,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0, y: 0.75 },
+        colors,
+        startVelocity: 60,
+        scalar: 1.1,
+        shapes: ["circle", "square"],
+        disableForReducedMotion: false,
+      });
+
+      myConfetti({
+        particleCount: 5,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1, y: 0.75 },
+        colors,
+        startVelocity: 60,
+        scalar: 1.1,
+        shapes: ["circle", "square"],
+        disableForReducedMotion: false,
+      });
+
+      if (Date.now() < end) {
+        requestAnimationFrame(frame);
+      } else {
+        setTimeout(() => {
+          document.body.removeChild(canvas);
+        }, 2000);
+      }
+    };
+
+    frame();
   };
 
   const completedCount = habits.filter((h) => h.completed).length;
@@ -197,7 +242,21 @@ function Home() {
               style={{ width: `${Math.max(readiness.score, 1)}%` }}
             />
           </div>
-          <div className="score-target">Target: July 31, 2026</div>
+          <div className="score-divider" />
+          <div className="score-habits-row">
+            {readiness.habits &&
+              readiness.habits.map((h) => (
+                <div
+                  key={h.name}
+                  className={`score-habit-chip ${parseFloat(h.weighted_score) > 0 ? "active" : ""}`}
+                >
+                  {h.name} {Math.round(h.habit_completion_pct)}%
+                </div>
+              ))}
+          </div>
+          <div className="score-target" style={{ marginTop: "10px" }}>
+            Target: July 31, 2026
+          </div>
         </div>
       )}
 

@@ -43,11 +43,11 @@ function Analytics() {
   };
 
   const getHeatmapColor = (count) => {
-    if (!count || count === 0) return "#EDE8E0";
-    if (count === 1) return "#F0DCC8";
-    if (count === 2) return "#D4A574";
-    if (count === 3) return "#C17B4E";
-    return "#854F0B";
+    if (!count || count === 0) return "#F0F0EE";
+    if (count === 1) return "#BFBFBF";
+    if (count === 2) return "#888888";
+    if (count === 3) return "#444444";
+    return "#1A1A1A";
   };
 
   const buildHeatmapGrid = () => {
@@ -104,7 +104,7 @@ function Analytics() {
         </div>
         <div className="heatmap-legend">
           <span>Less</span>
-          {["#EDE8E0", "#F0DCC8", "#D4A574", "#C17B4E", "#854F0B"].map((c) => (
+          {["#F0F0EE", "#BFBFBF", "#888888", "#444444", "#1A1A1A"].map((c) => (
             <div
               key={c}
               className="heatmap-cell"
@@ -158,14 +158,14 @@ function Analytics() {
                   })
                 }
                 fontSize={11}
-                tick={{ fill: "#9C8E7A" }}
-                axisLine={{ stroke: "#EDE8E0" }}
+                tick={{ fill: "#888888" }}
+                axisLine={{ stroke: "#EBEBEB" }}
                 tickLine={false}
               />
               <YAxis
                 domain={[0, 100]}
                 fontSize={11}
-                tick={{ fill: "#9C8E7A" }}
+                tick={{ fill: "#888888" }}
                 axisLine={false}
                 tickLine={false}
               />
@@ -173,19 +173,19 @@ function Analytics() {
                 formatter={(v) => [`${v}%`, "Completion"]}
                 labelFormatter={(v) => new Date(v).toLocaleDateString()}
                 contentStyle={{
-                  background: "#2C2A26",
+                  background: "#1A1A1A",
                   border: "none",
-                  borderRadius: "10px",
-                  color: "#FAF7F2",
+                  borderRadius: "8px",
+                  color: "#fff",
                   fontSize: "12px",
                 }}
-                itemStyle={{ color: "#FAF7F2" }}
-                labelStyle={{ color: "#9C8A78" }}
+                itemStyle={{ color: "#fff" }}
+                labelStyle={{ color: "rgba(255,255,255,0.5)" }}
               />
               <Bar
                 dataKey="completion_percentage"
-                fill="#C17B4E"
-                radius={[6, 6, 0, 0]}
+                fill="#1A1A1A"
+                radius={[4, 4, 0, 0]}
               />
             </BarChart>
           </ResponsiveContainer>

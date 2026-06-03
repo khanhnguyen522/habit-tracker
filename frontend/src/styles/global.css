@@ -5,31 +5,29 @@
 }
 
 body {
-  background-color: #faf7f2;
+  background-color: #ffffff;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  color: #2c2a26;
+  color: #1a1a1a;
   -webkit-font-smoothing: antialiased;
 }
 
 :root {
-  --bg: #faf7f2;
+  --bg: #ffffff;
   --bg-card: #ffffff;
-  --bg-warm: #f5f1ea;
-  --bg-accent: #fff8f0;
-  --text-primary: #2c2a26;
-  --text-secondary: #9c8e7a;
-  --text-muted: #c4b9a8;
-  --border: #ede8e0;
-  --border-warm: #d4c9b8;
-  --terracotta: #c17b4e;
-  --terracotta-dark: #854f0b;
-  --terracotta-light: #fff0dc;
-  --charcoal: #2c2a26;
-  --green: #3b6d11;
-  --green-light: #f4fae8;
-  --green-border: #c0dd97;
-  --radius-sm: 10px;
-  --radius-md: 16px;
-  --radius-lg: 20px;
+  --bg-surface: #f7f7f5;
+  --bg-hover: #f0f0ee;
+  --text-primary: #1a1a1a;
+  --text-secondary: #888888;
+  --text-muted: #bfbfbf;
+  --border: #ebebeb;
+  --border-strong: #ddddd8;
+  --accent: #1a1a1a;
+  --accent-light: #f0f0ee;
+  --success: #3b6d11;
+  --success-light: #eaf3de;
+  --success-border: #c0dd97;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
   --radius-full: 99px;
 }
