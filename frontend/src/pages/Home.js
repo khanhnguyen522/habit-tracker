@@ -10,6 +10,7 @@ function Home() {
   const [readiness, setReadiness] = useState(null);
   const [loading, setLoading] = useState(true);
   const [lastChecked, setLastChecked] = useState(null);
+  const [weeklyProgress, setWeeklyProgress] = useState(null);
   const { user, logout } = useAuth();
   const toastTimerRef = useRef(null);
 
@@ -19,11 +20,13 @@ function Home() {
 
   const fetchTodayData = async () => {
     try {
-      const [habitsRes, readinessRes, streaksRes] = await Promise.all([
-        api.get("/logs/today"),
-        api.get("/analytics/readiness-score"),
-        api.get("/analytics/streaks"),
-      ]);
+      const [habitsRes, readinessRes, streaksRes, weeklyRes] =
+        await Promise.all([
+          api.get("/logs/today"),
+          api.get("/analytics/readiness-score"),
+          api.get("/analytics/streaks"),
+          api.get("/analytics/weekly-progress"),
+        ]);
 
       const streakMap = {};
       streaksRes.data.forEach((s) => {
@@ -37,6 +40,7 @@ function Home() {
 
       setHabits(habitsWithStreaks);
       setReadiness(readinessRes.data);
+      setWeeklyProgress(weeklyRes.data);
     } catch (err) {
       console.error(err);
     } finally {
@@ -54,7 +58,6 @@ function Home() {
       } else {
         await api.post("/logs", { habit_id: habit.id, skipped: false });
 
-        // clear existing timer and reset
         if (toastTimerRef.current) {
           clearTimeout(toastTimerRef.current);
         }
@@ -101,14 +104,14 @@ function Home() {
   const fireConfetti = () => {
     const canvas = document.createElement("canvas");
     canvas.style.cssText = `
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 9999;
-  `;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 9999;
+    `;
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     document.body.appendChild(canvas);
@@ -126,7 +129,6 @@ function Home() {
       "#FF6BCC",
       "#FF9F43",
     ];
-
     const duration = 3000;
     const end = Date.now() + duration;
 
@@ -142,7 +144,6 @@ function Home() {
         shapes: ["circle", "square"],
         disableForReducedMotion: false,
       });
-
       myConfetti({
         particleCount: 5,
         angle: 120,
@@ -242,20 +243,52 @@ function Home() {
               style={{ width: `${Math.max(readiness.score, 1)}%` }}
             />
           </div>
-          <div className="score-divider" />
-          <div className="score-habits-row">
-            {readiness.habits &&
-              readiness.habits.map((h) => (
-                <div
-                  key={h.name}
-                  className={`score-habit-chip ${parseFloat(h.weighted_score) > 0 ? "active" : ""}`}
-                >
-                  {h.name} {Math.round(h.habit_completion_pct)}%
-                </div>
-              ))}
+          <div className="score-target">Target: July 31, 2026</div>
+        </div>
+      )}
+
+      {/* weekly progress */}
+      {weeklyProgress && (
+        <div className="weekly-section">
+          <div className="weekly-header">
+            <span className="weekly-title">This week</span>
+            <span className="weekly-dates">
+              {new Date(weeklyProgress.week_start).toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+              })}{" "}
+              —{" "}
+              {new Date(weeklyProgress.week_end).toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+              })}
+            </span>
           </div>
-          <div className="score-target" style={{ marginTop: "10px" }}>
-            Target: July 31, 2026
+          <div className="weekly-list">
+            {weeklyProgress.habits.map((h) => {
+              const pct = Math.min(parseInt(h.progress_pct || 0), 100);
+              const done = parseInt(h.completed_this_week);
+              const target = parseInt(h.weekly_target);
+              const isHit = done >= target;
+              return (
+                <div key={h.habit_id} className="weekly-item">
+                  <div className="weekly-item-top">
+                    <span className="weekly-item-name">
+                      {h.icon} {h.name}
+                    </span>
+                    <span className={`weekly-item-count ${isHit ? "hit" : ""}`}>
+                      {done}/{target}
+                    </span>
+                  </div>
+                  <div className="weekly-bar-bg">
+                    <div
+                      className={`weekly-bar-fill ${isHit ? "hit" : ""}`}
+                      style={{ width: `${pct}%` }}
+                    />
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
@@ -265,7 +298,7 @@ function Home() {
 
       {/* habits */}
       <div className="progress-row">
-        <div className="progress-text">Today's habits</div>
+        <div className="progress-text">Today</div>
         <div className="progress-count">
           {completedCount} / {totalCount}
         </div>

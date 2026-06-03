@@ -8,5 +8,6 @@ router.get("/heatmap", auth, analyticsController.getHeatmap);
 router.get("/completion-rate", auth, analyticsController.getCompletionRate);
 router.get("/best-worst-day", auth, analyticsController.getBestWorstDay);
 router.get("/readiness-score", auth, analyticsController.getReadinessScore);
+router.get("/weekly-progress", auth, analyticsController.getWeeklyProgress);
 
 module.exports = router;

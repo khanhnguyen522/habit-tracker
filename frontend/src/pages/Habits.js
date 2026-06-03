@@ -16,6 +16,7 @@ function Habits() {
     frequency: "daily",
     is_goal_habit: false,
     goal_weight: 10,
+    weekly_target: 7,
   });
 
   useEffect(() => {
@@ -57,6 +58,7 @@ function Habits() {
       frequency: habit.frequency,
       is_goal_habit: habit.is_goal_habit,
       goal_weight: habit.goal_weight,
+      weekly_target: habit.weekly_target || 7,
     });
     setShowForm(true);
   };
@@ -101,6 +103,7 @@ function Habits() {
       frequency: "daily",
       is_goal_habit: false,
       goal_weight: 10,
+      weekly_target: 7,
     });
   };
 
@@ -142,6 +145,7 @@ function Habits() {
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
           />
+
           <p className="form-label">Icon</p>
           <div className="icon-grid">
             {icons.map((icon) => (
@@ -154,6 +158,7 @@ function Habits() {
               </div>
             ))}
           </div>
+
           <p className="form-label">Frequency</p>
           <div className="freq-row">
             {["daily", "weekly"].map((f) => (
@@ -166,6 +171,22 @@ function Habits() {
               </div>
             ))}
           </div>
+
+          <p className="form-label">
+            Weekly target: {form.weekly_target}x per week
+          </p>
+          <input
+            type="range"
+            min="1"
+            max="7"
+            step="1"
+            value={form.weekly_target}
+            onChange={(e) =>
+              setForm({ ...form, weekly_target: parseInt(e.target.value) })
+            }
+            className="slider"
+          />
+
           <div className="goal-row">
             <div>
               <p className="form-label">Goal habit</p>
@@ -178,6 +199,7 @@ function Habits() {
               }
             />
           </div>
+
           {form.is_goal_habit && (
             <div>
               <p className="form-label">Weight: {form.goal_weight}%</p>
@@ -194,6 +216,7 @@ function Habits() {
               />
             </div>
           )}
+
           <div className="form-buttons">
             <button className="cancel-btn" onClick={resetForm}>
               Cancel
@@ -214,7 +237,7 @@ function Habits() {
               <div>
                 <p className="habit-name">{habit.name}</p>
                 <p className="habit-meta">
-                  {habit.frequency}
+                  {habit.frequency} · {habit.weekly_target}x/week
                   {habit.is_goal_habit && ` · goal · ${habit.goal_weight}%`}
                 </p>
               </div>

@@ -230,10 +230,61 @@ const getReadinessScore = async (req, res) => {
   }
 };
 
+// WEEKLY PROGRESS
+const getWeeklyProgress = async (req, res) => {
+  try {
+    const result = await pool.query(
+      `WITH week_logs AS (
+        SELECT
+          h.id as habit_id,
+          h.name,
+          h.icon,
+          h.weekly_target,
+          h.is_goal_habit,
+          COUNT(hl.id) as completed_this_week
+        FROM habits h
+        LEFT JOIN habit_logs hl
+          ON h.id = hl.habit_id
+          AND hl.skipped = false
+          AND hl.logged_date >= DATE_TRUNC('week', CURRENT_DATE)
+          AND hl.logged_date < DATE_TRUNC('week', CURRENT_DATE) + INTERVAL '7 days'
+        WHERE h.user_id = $1 AND h.is_archived = false
+        GROUP BY h.id, h.name, h.icon, h.weekly_target, h.is_goal_habit
+      )
+      SELECT
+        habit_id,
+        name,
+        icon,
+        weekly_target,
+        is_goal_habit,
+        completed_this_week,
+        ROUND(completed_this_week::decimal / NULLIF(weekly_target, 0) * 100, 0) as progress_pct
+      FROM week_logs
+      ORDER BY is_goal_habit DESC, habit_id ASC`,
+      [req.userId],
+    );
+
+    const weekStart = new Date();
+    weekStart.setDate(weekStart.getDate() - weekStart.getDay() + 1);
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekStart.getDate() + 6);
+
+    res.json({
+      habits: result.rows,
+      week_start: weekStart.toISOString().split("T")[0],
+      week_end: weekEnd.toISOString().split("T")[0],
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
 module.exports = {
   getStreaks,
   getHeatmap,
   getCompletionRate,
   getBestWorstDay,
   getReadinessScore,
+  getWeeklyProgress,
 };
