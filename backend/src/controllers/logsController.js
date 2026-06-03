@@ -1,10 +1,9 @@
 const pool = require("../db/index");
 
 const logHabit = async (req, res) => {
-  const { habit_id, logged_date, skipped } = req.body;
+  const { habit_id, logged_date, skipped, quantity } = req.body;
 
   try {
-    // make sure habit belongs to this user
     const habitCheck = await pool.query(
       "SELECT id FROM habits WHERE id = $1 AND user_id = $2",
       [habit_id, req.userId],
@@ -15,16 +14,17 @@ const logHabit = async (req, res) => {
     }
 
     const result = await pool.query(
-      `INSERT INTO habit_logs (habit_id, user_id, logged_date, skipped)
-       VALUES ($1, $2, $3, $4)
+      `INSERT INTO habit_logs (habit_id, user_id, logged_date, skipped, quantity)
+       VALUES ($1, $2, $3, $4, $5)
        ON CONFLICT (habit_id, logged_date) 
-       DO UPDATE SET skipped = EXCLUDED.skipped
+       DO UPDATE SET skipped = EXCLUDED.skipped, quantity = EXCLUDED.quantity
        RETURNING *`,
       [
         habit_id,
         req.userId,
         logged_date || new Date().toISOString().split("T")[0],
         skipped || false,
+        quantity || 1,
       ],
     );
 

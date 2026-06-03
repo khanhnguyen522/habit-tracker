@@ -240,8 +240,9 @@ const getWeeklyProgress = async (req, res) => {
           h.name,
           h.icon,
           h.weekly_target,
+          h.unit,
           h.is_goal_habit,
-          COUNT(hl.id) as completed_this_week
+          COALESCE(SUM(hl.quantity), 0) as completed_this_week
         FROM habits h
         LEFT JOIN habit_logs hl
           ON h.id = hl.habit_id
@@ -249,13 +250,14 @@ const getWeeklyProgress = async (req, res) => {
           AND hl.logged_date >= DATE_TRUNC('week', CURRENT_DATE)
           AND hl.logged_date < DATE_TRUNC('week', CURRENT_DATE) + INTERVAL '7 days'
         WHERE h.user_id = $1 AND h.is_archived = false
-        GROUP BY h.id, h.name, h.icon, h.weekly_target, h.is_goal_habit
+        GROUP BY h.id, h.name, h.icon, h.weekly_target, h.unit, h.is_goal_habit
       )
       SELECT
         habit_id,
         name,
         icon,
         weekly_target,
+        unit,
         is_goal_habit,
         completed_this_week,
         ROUND(completed_this_week::decimal / NULLIF(weekly_target, 0) * 100, 0) as progress_pct

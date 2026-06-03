@@ -17,6 +17,7 @@ function Habits() {
     is_goal_habit: false,
     goal_weight: 10,
     weekly_target: 7,
+    unit: "sessions",
   });
 
   useEffect(() => {
@@ -59,6 +60,7 @@ function Habits() {
       is_goal_habit: habit.is_goal_habit,
       goal_weight: habit.goal_weight,
       weekly_target: habit.weekly_target || 7,
+      unit: habit.unit || "sessions",
     });
     setShowForm(true);
   };
@@ -104,6 +106,7 @@ function Habits() {
       is_goal_habit: false,
       goal_weight: 10,
       weekly_target: 7,
+      unit: "sessions",
     });
   };
 
@@ -139,6 +142,7 @@ function Habits() {
           <h3 className="form-title">
             {editingHabit ? "Edit Habit" : "New Habit"}
           </h3>
+
           <input
             className="form-input"
             placeholder="Habit name"
@@ -172,13 +176,26 @@ function Habits() {
             ))}
           </div>
 
+          <p className="form-label">Unit — what do you count?</p>
+          <div className="freq-row" style={{ flexWrap: "wrap" }}>
+            {["sessions", "problems", "hours", "pages", "reps"].map((u) => (
+              <div
+                key={u}
+                className={`freq-option ${form.unit === u ? "selected" : ""}`}
+                onClick={() => setForm({ ...form, unit: u })}
+              >
+                {u}
+              </div>
+            ))}
+          </div>
+
           <p className="form-label">
-            Weekly target: {form.weekly_target}x per week
+            Weekly target: {form.weekly_target} {form.unit}/week
           </p>
           <input
             type="range"
             min="1"
-            max="7"
+            max={form.unit === "sessions" ? 7 : 30}
             step="1"
             value={form.weekly_target}
             onChange={(e) =>
@@ -237,7 +254,7 @@ function Habits() {
               <div>
                 <p className="habit-name">{habit.name}</p>
                 <p className="habit-meta">
-                  {habit.frequency} · {habit.weekly_target}x/week
+                  {habit.weekly_target} {habit.unit || "sessions"}/week
                   {habit.is_goal_habit && ` · goal · ${habit.goal_weight}%`}
                 </p>
               </div>

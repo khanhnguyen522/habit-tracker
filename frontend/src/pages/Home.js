@@ -11,6 +11,7 @@ function Home() {
   const [loading, setLoading] = useState(true);
   const [lastChecked, setLastChecked] = useState(null);
   const [weeklyProgress, setWeeklyProgress] = useState(null);
+  const [quantityModal, setQuantityModal] = useState(null);
   const { user, logout } = useAuth();
   const toastTimerRef = useRef(null);
 
@@ -49,31 +50,51 @@ function Home() {
   };
 
   const toggleHabit = async (habit) => {
-    try {
-      if (habit.completed) {
+    if (habit.completed) {
+      try {
         await api.delete(
           `/logs/${habit.id}/${new Date().toISOString().split("T")[0]}`,
         );
         setLastChecked(null);
-      } else {
-        await api.post("/logs", { habit_id: habit.id, skipped: false });
-
-        if (toastTimerRef.current) {
-          clearTimeout(toastTimerRef.current);
-        }
-        setLastChecked(habit.name);
-        toastTimerRef.current = setTimeout(() => {
-          setLastChecked(null);
-          toastTimerRef.current = null;
-        }, 3000);
-
-        const remaining = habits.filter(
-          (h) => !h.completed && h.id !== habit.id,
-        );
-        if (remaining.length === 0) {
-          setTimeout(() => fireConfetti(), 300);
-        }
+        fetchTodayData();
+      } catch (err) {
+        console.error(err);
       }
+      return;
+    }
+
+    if (habit.unit && habit.unit !== "sessions") {
+      setQuantityModal({ habit, quantity: "" });
+      return;
+    }
+
+    await logHabit(habit, 1);
+  };
+
+  const logHabit = async (habit, quantity) => {
+    try {
+      await api.post("/logs", {
+        habit_id: habit.id,
+        skipped: false,
+        quantity,
+      });
+
+      if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+      setLastChecked({
+        name: habit.name,
+        quantity,
+        unit: habit.unit || "sessions",
+      });
+      toastTimerRef.current = setTimeout(() => {
+        setLastChecked(null);
+        toastTimerRef.current = null;
+      }, 3000);
+
+      const remaining = habits.filter((h) => !h.completed && h.id !== habit.id);
+      if (remaining.length === 0) {
+        setTimeout(() => fireConfetti(), 300);
+      }
+
       fetchTodayData();
     } catch (err) {
       console.error(err);
@@ -172,11 +193,6 @@ function Home() {
   const totalCount = habits.length;
   const allDone = completedCount === totalCount && totalCount > 0;
 
-  const bestStreak = habits.reduce((max, h) => {
-    const s = parseInt(h.current_streak || 0);
-    return s > max ? s : max;
-  }, 0);
-
   if (loading) return <div className="loading">Loading...</div>;
 
   return (
@@ -197,26 +213,21 @@ function Home() {
         </div>
       </div>
 
-      {/* streak pills */}
-      <div className="streak-row">
-        <div className="streak-pill">🔥 {bestStreak} day streak</div>
-        {allDone && (
-          <div className="streak-pill streak-pill-green">
-            ⚡ All done today!
-          </div>
-        )}
-        {completedCount > 0 && !allDone && (
-          <div className="streak-pill streak-pill-green">⚡ Keep going!</div>
-        )}
-      </div>
-
       {/* xp toast */}
       {lastChecked && (
         <div className="xp-toast">
-          <div className="xp-dot">+10</div>
+          <div className="xp-dot">
+            {lastChecked.unit === "sessions"
+              ? "+1"
+              : `+${lastChecked.quantity}`}
+          </div>
           <div>
-            <div className="xp-text">{lastChecked} completed!</div>
-            <div className="xp-sub">Keep the streak going today</div>
+            <div className="xp-text">{lastChecked.name} logged!</div>
+            <div className="xp-sub">
+              {lastChecked.unit === "sessions"
+                ? "Keep the streak going"
+                : `${lastChecked.quantity} ${lastChecked.unit} logged`}
+            </div>
           </div>
         </div>
       )}
@@ -267,7 +278,7 @@ function Home() {
           <div className="weekly-list">
             {weeklyProgress.habits.map((h) => {
               const pct = Math.min(parseInt(h.progress_pct || 0), 100);
-              const done = parseInt(h.completed_this_week);
+              const done = parseFloat(h.completed_this_week);
               const target = parseInt(h.weekly_target);
               const isHit = done >= target;
               return (
@@ -277,7 +288,7 @@ function Home() {
                       {h.icon} {h.name}
                     </span>
                     <span className={`weekly-item-count ${isHit ? "hit" : ""}`}>
-                      {done}/{target}
+                      {done}/{target} {h.unit}
                     </span>
                   </div>
                   <div className="weekly-bar-bg">
@@ -332,18 +343,63 @@ function Home() {
               )}
             </div>
             <div className="habit-streak-info">
-              {habit.current_streak > 0 ? (
-                <>
-                  🔥 {habit.current_streak}
-                  <span>streak</span>
-                </>
-              ) : (
-                <span style={{ color: "var(--text-muted)" }}>—</span>
+              {habit.unit && habit.unit !== "sessions" && (
+                <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>
+                  {habit.unit}
+                </span>
               )}
             </div>
           </div>
         ))}
       </div>
+
+      {/* quantity modal */}
+      {quantityModal && (
+        <div
+          className="quantity-overlay"
+          onClick={() => setQuantityModal(null)}
+        >
+          <div className="quantity-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="quantity-habit-name">
+              {quantityModal.habit.icon} {quantityModal.habit.name}
+            </div>
+            <div className="quantity-label">
+              How many {quantityModal.habit.unit}?
+            </div>
+            <input
+              className="quantity-input"
+              type="number"
+              min="0.5"
+              step="0.5"
+              placeholder="0"
+              value={quantityModal.quantity}
+              onChange={(e) =>
+                setQuantityModal({ ...quantityModal, quantity: e.target.value })
+              }
+              autoFocus
+            />
+            <div className="quantity-buttons">
+              <button
+                className="quantity-cancel"
+                onClick={() => setQuantityModal(null)}
+              >
+                Cancel
+              </button>
+              <button
+                className="quantity-confirm"
+                onClick={() => {
+                  const qty = parseFloat(quantityModal.quantity);
+                  if (!qty || qty <= 0) return;
+                  logHabit(quantityModal.habit, qty);
+                  setQuantityModal(null);
+                }}
+              >
+                Log {quantityModal.habit.unit}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <Navbar />
     </div>

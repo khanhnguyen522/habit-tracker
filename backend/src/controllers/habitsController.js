@@ -1,13 +1,20 @@
 const pool = require("../db/index");
 
 const createHabit = async (req, res) => {
-  const { name, icon, frequency, is_goal_habit, goal_weight, weekly_target } =
-    req.body;
+  const {
+    name,
+    icon,
+    frequency,
+    is_goal_habit,
+    goal_weight,
+    weekly_target,
+    unit,
+  } = req.body;
 
   try {
     const result = await pool.query(
-      `INSERT INTO habits (user_id, name, icon, frequency, is_goal_habit, goal_weight, weekly_target)
-       VALUES ($1, $2, $3, $4, $5, $6, $7)
+      `INSERT INTO habits (user_id, name, icon, frequency, is_goal_habit, goal_weight, weekly_target, unit)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
        RETURNING *`,
       [
         req.userId,
@@ -17,6 +24,7 @@ const createHabit = async (req, res) => {
         is_goal_habit || false,
         goal_weight || 10,
         weekly_target || 7,
+        unit || "sessions",
       ],
     );
 
@@ -52,6 +60,7 @@ const updateHabit = async (req, res) => {
     goal_weight,
     is_archived,
     weekly_target,
+    unit,
   } = req.body;
   const { id } = req.params;
 
@@ -64,8 +73,9 @@ const updateHabit = async (req, res) => {
            is_goal_habit = COALESCE($4, is_goal_habit),
            goal_weight = COALESCE($5, goal_weight),
            is_archived = COALESCE($6, is_archived),
-           weekly_target = COALESCE($7, weekly_target)
-       WHERE id = $8 AND user_id = $9
+           weekly_target = COALESCE($7, weekly_target),
+           unit = COALESCE($8, unit)
+       WHERE id = $9 AND user_id = $10
        RETURNING *`,
       [
         name,
@@ -75,6 +85,7 @@ const updateHabit = async (req, res) => {
         goal_weight,
         is_archived,
         weekly_target,
+        unit,
         id,
         req.userId,
       ],
