@@ -14,6 +14,7 @@ function Home() {
   const [quantityModal, setQuantityModal] = useState(null);
   const { user, logout } = useAuth();
   const toastTimerRef = useRef(null);
+  const longPressTimer = useRef(null);
 
   useEffect(() => {
     fetchTodayData();
@@ -49,7 +50,7 @@ function Home() {
     }
   };
 
-  const toggleHabit = async (habit) => {
+  const toggleHabit = async (habit, isLongPress = false) => {
     if (habit.completed) {
       try {
         await api.delete(
@@ -63,20 +64,31 @@ function Home() {
       return;
     }
 
-    if (habit.unit && habit.unit !== "sessions") {
-      setQuantityModal({ habit, quantity: "" });
+    if (isLongPress) {
+      setQuantityModal({
+        habit,
+        quantity: habit.unit !== "sessions" ? "" : 1,
+        date: "today",
+        isSession: habit.unit === "sessions",
+      });
       return;
     }
 
-    await logHabit(habit, 1);
+    if (habit.unit && habit.unit !== "sessions") {
+      setQuantityModal({ habit, quantity: "", date: "today" });
+      return;
+    }
+
+    await logHabit(habit, 1, new Date().toISOString().split("T")[0]);
   };
 
-  const logHabit = async (habit, quantity) => {
+  const logHabit = async (habit, quantity, date) => {
     try {
       await api.post("/logs", {
         habit_id: habit.id,
         skipped: false,
         quantity,
+        logged_date: date || new Date().toISOString().split("T")[0],
       });
 
       if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
@@ -84,14 +96,18 @@ function Home() {
         name: habit.name,
         quantity,
         unit: habit.unit || "sessions",
+        date,
       });
       toastTimerRef.current = setTimeout(() => {
         setLastChecked(null);
         toastTimerRef.current = null;
       }, 3000);
 
+      const yesterday = new Date(Date.now() - 86400000)
+        .toISOString()
+        .split("T")[0];
       const remaining = habits.filter((h) => !h.completed && h.id !== habit.id);
-      if (remaining.length === 0) {
+      if (remaining.length === 0 && date !== yesterday) {
         setTimeout(() => fireConfetti(), 300);
       }
 
@@ -191,7 +207,6 @@ function Home() {
 
   const completedCount = habits.filter((h) => h.completed).length;
   const totalCount = habits.length;
-  const allDone = completedCount === totalCount && totalCount > 0;
 
   if (loading) return <div className="loading">Loading...</div>;
 
@@ -224,9 +239,12 @@ function Home() {
           <div>
             <div className="xp-text">{lastChecked.name} logged!</div>
             <div className="xp-sub">
-              {lastChecked.unit === "sessions"
-                ? "Keep the streak going"
-                : `${lastChecked.quantity} ${lastChecked.unit} logged`}
+              {lastChecked.date ===
+              new Date(Date.now() - 86400000).toISOString().split("T")[0]
+                ? "Logged for yesterday"
+                : lastChecked.unit === "sessions"
+                  ? "Keep the streak going"
+                  : `${lastChecked.quantity} ${lastChecked.unit} logged`}
             </div>
           </div>
         </div>
@@ -321,6 +339,17 @@ function Home() {
             key={habit.id}
             className={`habit-item ${habit.completed ? "habit-done" : ""}`}
             onClick={() => toggleHabit(habit)}
+            onContextMenu={(e) => {
+              e.preventDefault();
+              toggleHabit(habit, true);
+            }}
+            onTouchStart={() => {
+              longPressTimer.current = setTimeout(() => {
+                toggleHabit(habit, true);
+              }, 500);
+            }}
+            onTouchEnd={() => clearTimeout(longPressTimer.current)}
+            onTouchMove={() => clearTimeout(longPressTimer.current)}
           >
             <div
               className={`habit-checkbox ${habit.completed ? "checked" : ""}`}
@@ -353,6 +382,17 @@ function Home() {
         ))}
       </div>
 
+      <p
+        style={{
+          fontSize: "11px",
+          color: "var(--text-muted)",
+          textAlign: "center",
+          marginTop: "12px",
+        }}
+      >
+        Long press any habit to log for yesterday
+      </p>
+
       {/* quantity modal */}
       {quantityModal && (
         <div
@@ -363,21 +403,49 @@ function Home() {
             <div className="quantity-habit-name">
               {quantityModal.habit.icon} {quantityModal.habit.name}
             </div>
-            <div className="quantity-label">
-              How many {quantityModal.habit.unit}?
+
+            <div className="quantity-date-row">
+              <div
+                className={`quantity-date-option ${quantityModal.date === "today" ? "selected" : ""}`}
+                onClick={() =>
+                  setQuantityModal({ ...quantityModal, date: "today" })
+                }
+              >
+                Today
+              </div>
+              <div
+                className={`quantity-date-option ${quantityModal.date === "yesterday" ? "selected" : ""}`}
+                onClick={() =>
+                  setQuantityModal({ ...quantityModal, date: "yesterday" })
+                }
+              >
+                Yesterday
+              </div>
             </div>
-            <input
-              className="quantity-input"
-              type="number"
-              min="0.5"
-              step="0.5"
-              placeholder="0"
-              value={quantityModal.quantity}
-              onChange={(e) =>
-                setQuantityModal({ ...quantityModal, quantity: e.target.value })
-              }
-              autoFocus
-            />
+
+            {!quantityModal.isSession && (
+              <>
+                <div className="quantity-label">
+                  How many {quantityModal.habit.unit}?
+                </div>
+                <input
+                  className="quantity-input"
+                  type="number"
+                  min="0.5"
+                  step="0.5"
+                  placeholder="0"
+                  value={quantityModal.quantity}
+                  onChange={(e) =>
+                    setQuantityModal({
+                      ...quantityModal,
+                      quantity: e.target.value,
+                    })
+                  }
+                  autoFocus
+                />
+              </>
+            )}
+
             <div className="quantity-buttons">
               <button
                 className="quantity-cancel"
@@ -388,13 +456,26 @@ function Home() {
               <button
                 className="quantity-confirm"
                 onClick={() => {
-                  const qty = parseFloat(quantityModal.quantity);
+                  const qty = quantityModal.isSession
+                    ? 1
+                    : parseFloat(quantityModal.quantity);
                   if (!qty || qty <= 0) return;
-                  logHabit(quantityModal.habit, qty);
+
+                  const date =
+                    quantityModal.date === "yesterday"
+                      ? new Date(Date.now() - 86400000)
+                          .toISOString()
+                          .split("T")[0]
+                      : new Date().toISOString().split("T")[0];
+
+                  logHabit(quantityModal.habit, qty, date);
                   setQuantityModal(null);
                 }}
               >
-                Log {quantityModal.habit.unit}
+                Log{" "}
+                {quantityModal.date === "yesterday"
+                  ? "for yesterday"
+                  : "for today"}
               </button>
             </div>
           </div>

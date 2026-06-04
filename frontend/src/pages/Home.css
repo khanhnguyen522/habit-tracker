@@ -500,3 +500,28 @@
   font-weight: 600;
   cursor: pointer;
 }
+
+.quantity-date-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.quantity-date-option {
+  flex: 1;
+  padding: 8px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s ease;
+}
+
+.quantity-date-option.selected {
+  border-color: var(--accent);
+  color: var(--text-primary);
+  background: var(--bg-hover);
+}
